@@ -173,12 +173,6 @@ Navigate to http://localhost:5177 in your browser
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ---
-
-**🎉 Ready to optimize your AGV operations? Get started now!**
 
 *This project was developed for the Dynamic AGV Scheduling Hackathon*
