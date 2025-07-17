@@ -169,4 +169,4 @@ Navigate to http://localhost:5177 in your browser
 
 ---
 
-*This project was developed for the Dynamic AGV Scheduling Hackathon*
+*This project was developed for the Rockwell RokConnect Hackathon*
