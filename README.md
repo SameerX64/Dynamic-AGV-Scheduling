@@ -36,7 +36,7 @@ A comprehensive Automated Guided Vehicle (AGV) scheduling system with real-time 
 ### Installation & Running
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/Dynamic-AGV-Scheduling.git
+git clone https://github.com/SameerX64/Dynamic-AGV-Scheduling.git
 cd Dynamic-AGV-Scheduling
 
 # Make scripts executable
