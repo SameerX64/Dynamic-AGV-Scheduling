@@ -1,0 +1,46 @@
+/* Smooth transitions for AGV movements */
+.react-flow__node {
+  transition: transform 0.5s ease;
+}
+
+.node-location {
+  border-radius: 12px;
+  padding: 12px;
+  background-color: #f3f4f6;
+  border: 2px solid #4b5563;
+}
+
+.node-agv {
+  transition: all 0.5s ease;
+}
+
+.node-agv.moving {
+  animation: pulse 2s infinite;
+}
+
+.edge-highlight {
+  stroke: #3b82f6;
+  stroke-width: 3;
+  animation: dash 1s linear infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
+
+@keyframes dash {
+  from {
+    stroke-dashoffset: 24;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
