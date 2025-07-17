@@ -1,5 +1,7 @@
 # 🚀 Dynamic AGV Scheduling System
 
+<img src="https://github.com/SameerX64/Dynamic-AGV-Scheduling/blob/main/header_image.png" alt="Screenshot" width="4000"/>
+
 A comprehensive Automated Guided Vehicle (AGV) scheduling system with real-time visualization, intelligent pathfinding, and collision avoidance.
 
 ## 🎯 Features
