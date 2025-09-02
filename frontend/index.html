@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGV Simulation Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .panel h3 {
+            color: #4a5568;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 8px;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #4299e1, #3182ce);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #48bb78, #38a169);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #f56565, #e53e3e);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .file-upload {
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 2px dashed #cbd5e0;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload:hover {
+            border-color: #4299e1;
+            background: rgba(66, 153, 225, 0.05);
+        }
+
+        .file-upload input[type="file"] {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        .node-map {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background: linear-gradient(45deg, #f7fafc, #edf2f7);
+            border-radius: 15px;
+            border: 2px solid #e2e8f0;
+            overflow: hidden;
+        }
+
+        .node {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #4299e1, #3182ce);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(66, 153, 225, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .node:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(66, 153, 225, 0.5);
+        }
+
+        .agv {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            transition: all 0.5s ease;
+            z-index: 100;
+            animation: pulse 2s infinite;
+        }
+
+        .agv-1 { background: linear-gradient(45deg, #f56565, #e53e3e); }
+        .agv-2 { background: linear-gradient(45deg, #48bb78, #38a169); }
+        .agv-3 { background: linear-gradient(45deg, #ed8936, #dd6b20); }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(66, 153, 225, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(66, 153, 225, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(66, 153, 225, 0); }
+        }
+
+        @keyframes charging {
+            0% { 
+                box-shadow: 0 0 15px rgba(246, 224, 94, 0.5);
+                transform: scale(1);
+            }
+            100% { 
+                box-shadow: 0 0 25px rgba(246, 224, 94, 1);
+                transform: scale(1.1);
+            }
+        }
+
+        .edge {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, #cbd5e0, #a0aec0);
+            transform-origin: left center;
+            opacity: 0.6;
+        }
+
+        .logs-panel {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            padding: 8px 12px;
+            margin: 4px 0;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            border-left: 4px solid #4299e1;
+        }
+
+        .log-execution {
+            background: rgba(72, 187, 120, 0.1);
+            border-left-color: #48bb78;
+        }
+
+        .log-task {
+            background: rgba(66, 153, 225, 0.1);
+            border-left-color: #4299e1;
+        }
+
+        .log-system {
+            background: rgba(237, 137, 54, 0.1);
+            border-left-color: #ed8936;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .status-card {
+            background: linear-gradient(45deg, #f7fafc, #edf2f7);
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #4299e1;
+        }
+
+        .status-card h4 {
+            color: #2d3748;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-card .value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #4299e1;
+        }
+
+        .task-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .task-form input, .task-form select {
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .connection-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            border-radius: 20px;
+            color: white;
+            font-weight: bold;
+            z-index: 1000;
+        }
+
+        .connected {
+            background: linear-gradient(45deg, #48bb78, #38a169);
+        }
+
+        .disconnected {
+            background: linear-gradient(45deg, #f56565, #e53e3e);
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .task-form {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="connection-status" id="connectionStatus">Connecting...</div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>🚛 AGV Simulation Dashboard</h1>
+            <p>Real-time Autonomous Ground Vehicle Monitoring & Control</p>
+        </div>
+
+        <div class="dashboard">
+            <!-- Control Panel -->
+            <div class="panel">
+                <h3>🎮 Control Center</h3>
+                
+                <!-- File Upload Section -->
+                <div class="file-upload">
+                    <h4>📁 Upload Dataset</h4>
+                    <input type="file" id="datasetFile" accept=".csv,.xlsx,.xls" />
+                    <button class="btn btn-primary" onclick="uploadDataset()">Upload Dataset</button>
+                    <div id="uploadStatus"></div>
+                </div>
+
+                <!-- Simulation Controls -->
+                <div class="controls">
+                    <button class="btn btn-success" onclick="startSimulation()">▶️ Start Simulation</button>
+                    <button class="btn btn-danger" onclick="stopSimulation()">⏹️ Stop Simulation</button>
+                    <button class="btn btn-primary" onclick="resetSimulation()">🔄 Reset</button>
+                </div>
+
+                <!-- Manual Task Creation -->
+                <div>
+                    <h4>✨ Create Manual Task</h4>
+                    <div class="task-form">
+                        <input type="number" id="startNode" placeholder="Start Node" min="1" max="9" value="1">
+                        <input type="number" id="endNode" placeholder="End Node" min="1" max="9" value="5">
+                        <input type="number" id="weight" placeholder="Weight" min="1" value="25">
+                        <select id="priority">
+                            <option value="high">High Priority</option>
+                            <option value="medium">Medium Priority</option>
+                            <option value="low">Low Priority</option>
+                        </select>
+                        <button class="btn btn-success" onclick="createTask()">Create Task</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Node Map Visualization -->
+            <div class="panel">
+                <h3>🗺️ AGV Node Map</h3>
+                <div class="node-map" id="nodeMap">
+                    <!-- Nodes and AGVs will be dynamically generated -->
+                </div>
+            </div>
+
+            <!-- System Status -->
+            <div class="panel">
+                <h3>📊 System Status</h3>
+                <div class="status-grid" id="statusGrid">
+                    <!-- Status cards will be dynamically updated -->
+                </div>
+            </div>
+
+            <!-- Real-time Logs -->
+            <div class="panel logs-panel">
+                <h3>📝 Real-time Execution Logs</h3>
+                <div id="logsContainer">
+                    <!-- Logs will be displayed here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // WebSocket connection
+        let socket = null;
+        let reconnectInterval = null;
+        
+        // System state
+        let systemState = {
+            agvs: {},
+            tasks: [],
+            isRunning: false
+        };
+
+        // Node positions for a 3x3 grid layout
+        const nodePositions = {
+            1: { x: 100, y: 100 },
+            2: { x: 250, y: 100 },
+            3: { x: 400, y: 100 },
+            4: { x: 100, y: 250 },
+            5: { x: 250, y: 250 },
+            6: { x: 400, y: 250 },
+            7: { x: 100, y: 400 },
+            8: { x: 250, y: 400 },
+            9: { x: 400, y: 400 }
+        };
+
+        // Node connections (edges) - NO DIAGONALS, only horizontal/vertical
+            const nodeEdges = [
+                // Horizontal edges
+                { from: 1, to: 2 }, { from: 2, to: 3 },
+                { from: 4, to: 5 }, { from: 5, to: 6 },
+                { from: 7, to: 8 }, { from: 8, to: 9 },
+                // Vertical edges
+                { from: 1, to: 4 }, { from: 2, to: 5 }, { from: 3, to: 6 },
+                { from: 4, to: 7 }, { from: 5, to: 8 }
+                // Note: Edge between 6 and 9 removed per user request
+            ];        // Initialize the application
+        function init() {
+            createNodeMap();
+            connectWebSocket();
+            updateSystemStatus();
+            setInterval(updateSystemStatus, 2000);
+        }
+
+        // WebSocket connection management
+        function connectWebSocket() {
+            try {
+                socket = new WebSocket('ws://localhost:5000');
+                
+                socket.onopen = function() {
+                    console.log('WebSocket connected');
+                    updateConnectionStatus(true);
+                    if (reconnectInterval) {
+                        clearInterval(reconnectInterval);
+                        reconnectInterval = null;
+                    }
+                };
+
+                socket.onmessage = function(event) {
+                    const data = JSON.parse(event.data);
+                    handleWebSocketMessage(data);
+                };
+
+                socket.onclose = function() {
+                    console.log('WebSocket disconnected');
+                    updateConnectionStatus(false);
+                    attemptReconnect();
+                };
+
+                socket.onerror = function(error) {
+                    console.error('WebSocket error:', error);
+                    updateConnectionStatus(false);
+                };
+
+            } catch (error) {
+                console.error('Failed to create WebSocket:', error);
+                updateConnectionStatus(false);
+                attemptReconnect();
+            }
+        }
+
+        function attemptReconnect() {
+            if (!reconnectInterval) {
+                reconnectInterval = setInterval(() => {
+                    console.log('Attempting to reconnect...');
+                    connectWebSocket();
+                }, 3000);
+            }
+        }
+
+        function updateConnectionStatus(connected) {
+            const status = document.getElementById('connectionStatus');
+            if (connected) {
+                status.textContent = '🟢 Connected';
+                status.className = 'connection-status connected';
+            } else {
+                status.textContent = '🔴 Disconnected';
+                status.className = 'connection-status disconnected';
+            }
+        }
+
+        // Handle WebSocket messages
+        function handleWebSocketMessage(data) {
+            switch (data.type) {
+                case 'taskCreated':
+                    addLog(`Task Created: ${data.task.executionLog}`, 'task');
+                    updateAGVPosition(data.task.agvId, data.task.startNode);
+                    break;
+                case 'taskCompleted':
+                    if (data.isChargingTask) {
+                        addLog(`🔋 Charging Route Completed: AGV arrived at charging station`, 'system');
+                    } else {
+                        addLog(`✅ Task Completed: ${data.executionLog}`, 'execution');
+                    }
+                    updateAGVPosition(data.agvId, data.position);
+                    break;
+                case 'chargingTaskCreated':
+                    addLog(`🔋 Charging Task: ${data.task.executionLog}`, 'system');
+                    break;
+                case 'agvCharging':
+                    addLog(`⚡ AGV ${data.agvId} charging: ${data.battery}%`, 'system');
+                    updateAGVBattery(data.agvId, data.battery);
+                    setAGVChargingState(data.agvId, true);
+                    break;
+                case 'chargingComplete':
+                    addLog(`✅ AGV ${data.agvId} charging complete: ${data.battery}%`, 'system');
+                    updateAGVBattery(data.agvId, data.battery);
+                    setAGVChargingState(data.agvId, false);
+                    break;
+                case 'simulationStarted':
+                    addLog('🚀 Simulation Started with collision detection and simultaneous movement', 'system');
+                    systemState.isRunning = true;
+                    break;
+                case 'simulationStopped':
+                    addLog('⏹️ Simulation Stopped - All AGVs halted', 'system');
+                    systemState.isRunning = false;
+                    break;
+                case 'agvMovement':
+                    updateAGVPosition(data.agvId, data.position);
+                    updateAGVBattery(data.agvId, data.battery);
+                    if (data.isChargingRoute) {
+                        addLog(`🔋 AGV ${data.agvId.slice(-1)} moving to charging station`, 'system');
+                    }
+                    break;
+                case 'agvWaiting':
+                    addLog(`⏸️ AGV ${data.agvId.slice(-1)} waiting - collision avoidance active`, 'system');
+                    setAGVWaitingState(data.agvId, true);
+                    setTimeout(() => setAGVWaitingState(data.agvId, false), 2000);
+                    break;
+                case 'log':
+                    addLog(data.data, 'execution');
+                    break;
+            }
+        }
+
+        // Create the node map visualization
+        function createNodeMap() {
+            const mapContainer = document.getElementById('nodeMap');
+            mapContainer.innerHTML = '';
+
+            // Create edges first (so they appear behind nodes)
+            nodeEdges.forEach(edge => {
+                createEdge(edge.from, edge.to, mapContainer);
+            });
+
+            // Create nodes
+            for (let nodeId in nodePositions) {
+                createNode(nodeId, nodePositions[nodeId], mapContainer);
+            }
+
+            // Create AGVs
+            createAGVs(mapContainer);
+        }
+
+        function createNode(nodeId, position, container) {
+            const node = document.createElement('div');
+            node.className = 'node';
+            
+            // Special styling for charging station (node 9)
+            if (nodeId == 9) {
+                node.style.background = 'linear-gradient(45deg, #f6e05e, #ecc94b)';
+                node.style.boxShadow = '0 4px 15px rgba(236, 201, 75, 0.5)';
+                node.innerHTML = `${nodeId}<br>⚡`;
+                node.style.fontSize = '10px';
+                node.style.lineHeight = '1';
+                node.title = 'Charging Station';
+            } else {
+                node.textContent = nodeId;
+            }
+            
+            node.style.left = position.x + 'px';
+            node.style.top = position.y + 'px';
+            node.id = `node-${nodeId}`;
+            
+            node.onclick = () => {
+                const startInput = document.getElementById('startNode');
+                const endInput = document.getElementById('endNode');
+                
+                if (!startInput.value) {
+                    startInput.value = nodeId;
+                } else if (!endInput.value && startInput.value !== nodeId) {
+                    endInput.value = nodeId;
+                } else {
+                    startInput.value = nodeId;
+                    endInput.value = '';
+                }
+            };
+            
+            container.appendChild(node);
+        }
+
+        function createEdge(fromNode, toNode, container) {
+            const fromPos = nodePositions[fromNode];
+            const toPos = nodePositions[toNode];
+            
+            const edge = document.createElement('div');
+            edge.className = 'edge';
+            
+            const dx = toPos.x - fromPos.x;
+            const dy = toPos.y - fromPos.y;
+            const length = Math.sqrt(dx * dx + dy * dy);
+            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+            
+            edge.style.left = (fromPos.x + 20) + 'px';
+            edge.style.top = (fromPos.y + 20) + 'px';
+            edge.style.width = length + 'px';
+            edge.style.transform = `rotate(${angle}deg)`;
+            
+            container.appendChild(edge);
+        }
+
+        function createAGVs(container) {
+            for (let i = 1; i <= 3; i++) {
+                const agv = document.createElement('div');
+                agv.className = `agv agv-${i}`;
+                agv.textContent = i;
+                agv.id = `agv-${i}`;
+                
+                // Initial position (node 1, 3, 7 respectively)
+                const initialNodes = [1, 3, 7];
+                const initialPos = nodePositions[initialNodes[i-1]];
+                agv.style.left = (initialPos.x + 5) + 'px';
+                agv.style.top = (initialPos.y + 5) + 'px';
+                
+                container.appendChild(agv);
+            }
+        }
+
+        function updateAGVPosition(agvId, nodeId) {
+            const agvElement = document.getElementById(`agv-${agvId.slice(-1)}`);
+            if (agvElement && nodePositions[nodeId]) {
+                const position = nodePositions[nodeId];
+                agvElement.style.left = (position.x + 5) + 'px';
+                agvElement.style.top = (position.y + 5) + 'px';
+                
+                // Add visual indicator if at charging station
+                if (nodeId == 9) {
+                    agvElement.style.boxShadow = '0 0 15px rgba(246, 224, 94, 0.8)';
+                } else {
+                    agvElement.style.boxShadow = '0 0 0 0';
+                }
+            }
+        }
+
+        function updateAGVBattery(agvId, battery) {
+            // Update visual indicators based on battery level
+            const agvElement = document.getElementById(`agv-${agvId.slice(-1)}`);
+            if (agvElement) {
+                if (battery <= 30) {
+                    agvElement.style.border = '3px solid #f56565'; // Red border for low battery
+                } else if (battery <= 60) {
+                    agvElement.style.border = '3px solid #ed8936'; // Orange border for medium battery
+                } else {
+                    agvElement.style.border = '3px solid #48bb78'; // Green border for good battery
+                }
+                
+                // Update tooltip with battery level
+                agvElement.title = `AGV ${agvId.slice(-1)} - Battery: ${battery}%`;
+            }
+        }
+
+        function setAGVChargingState(agvId, isCharging) {
+            const agvElement = document.getElementById(`agv-${agvId.slice(-1)}`);
+            if (agvElement) {
+                if (isCharging) {
+                    agvElement.style.animation = 'charging 1s infinite alternate';
+                    agvElement.style.boxShadow = '0 0 20px rgba(246, 224, 94, 1)';
+                } else {
+                    agvElement.style.animation = 'pulse 2s infinite';
+                    agvElement.style.boxShadow = '0 0 0 0';
+                }
+            }
+        }
+
+        function setAGVWaitingState(agvId, isWaiting) {
+            const agvElement = document.getElementById(`agv-${agvId.slice(-1)}`);
+            if (agvElement) {
+                if (isWaiting) {
+                    agvElement.style.animation = 'none';
+                    agvElement.style.opacity = '0.6';
+                    agvElement.style.transform = 'scale(0.9)';
+                } else {
+                    agvElement.style.animation = 'pulse 2s infinite';
+                    agvElement.style.opacity = '1';
+                    agvElement.style.transform = 'scale(1)';
+                }
+            }
+        }
+
+        // API Functions
+        async function startSimulation() {
+            try {
+                const response = await fetch('/api/simulation/start', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const result = await response.json();
+                addLog(result.message || 'Simulation started', 'system');
+            } catch (error) {
+                addLog('Failed to start simulation: ' + error.message, 'system');
+            }
+        }
+
+        async function stopSimulation() {
+            try {
+                const response = await fetch('/api/simulation/stop', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const result = await response.json();
+                addLog(result.message || 'Simulation stopped', 'system');
+            } catch (error) {
+                addLog('Failed to stop simulation: ' + error.message, 'system');
+            }
+        }
+
+        async function resetSimulation() {
+            try {
+                await stopSimulation();
+                // Reset AGV positions to initial state
+                updateAGVPosition('AGV1', 1);
+                updateAGVPosition('AGV2', 3);
+                updateAGVPosition('AGV3', 7);
+                
+                document.getElementById('logsContainer').innerHTML = '';
+                addLog('Simulation reset', 'system');
+            } catch (error) {
+                addLog('Failed to reset simulation: ' + error.message, 'system');
+            }
+        }
+
+        async function createTask() {
+            const startNode = document.getElementById('startNode').value;
+            const endNode = document.getElementById('endNode').value;
+            const weight = document.getElementById('weight').value;
+            const priority = document.getElementById('priority').value;
+
+            if (!startNode || !endNode || startNode === endNode) {
+                addLog('Please select valid start and end nodes', 'system');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/tasks/create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        startNode: parseInt(startNode),
+                        endNode: parseInt(endNode),
+                        weight: parseInt(weight),
+                        priority: priority
+                    })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    addLog(`Task created: ${result.executionLog}`, 'task');
+                    // Clear form
+                    document.getElementById('startNode').value = '';
+                    document.getElementById('endNode').value = '';
+                    document.getElementById('weight').value = '25';
+                } else {
+                    addLog(result.error || 'Failed to create task', 'system');
+                }
+            } catch (error) {
+                addLog('Failed to create task: ' + error.message, 'system');
+            }
+        }
+
+        async function uploadDataset() {
+            const fileInput = document.getElementById('datasetFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                addLog('Please select a file to upload', 'system');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('dataset', file);
+
+            try {
+                document.getElementById('uploadStatus').innerHTML = '⏳ Uploading...';
+                
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('uploadStatus').innerHTML = '✅ Upload successful!';
+                    addLog(`Dataset uploaded: ${result.filename}`, 'system');
+                } else {
+                    document.getElementById('uploadStatus').innerHTML = '❌ Upload failed!';
+                    addLog(`Upload failed: ${result.error}`, 'system');
+                }
+            } catch (error) {
+                document.getElementById('uploadStatus').innerHTML = '❌ Upload error!';
+                addLog('Upload error: ' + error.message, 'system');
+            }
+        }
+
+        async function updateSystemStatus() {
+            try {
+                const response = await fetch('/api/status');
+                const status = await response.json();
+                
+                displaySystemStatus(status);
+                systemState = status;
+            } catch (error) {
+                console.error('Failed to fetch system status:', error);
+            }
+        }
+
+        function displaySystemStatus(status) {
+            const statusGrid = document.getElementById('statusGrid');
+            statusGrid.innerHTML = '';
+
+            // Create status cards
+            const cards = [
+                { title: 'Simulation Status', value: status.isRunning ? '🟢 Running' : '🔴 Stopped' },
+                { title: 'Active AGVs', value: Object.keys(status.agvs || {}).length },
+                { title: 'Total Tasks', value: status.tasks ? status.tasks.length : 0 },
+                { title: 'Completed Tasks', value: status.totalTasksCompleted || 0 }
+            ];
+
+            cards.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'status-card';
+                cardElement.innerHTML = `
+                    <h4>${card.title}</h4>
+                    <div class="value">${card.value}</div>
+                `;
+                statusGrid.appendChild(cardElement);
+            });
+
+            // Add AGV battery status cards
+            if (status.agvs) {
+                Object.values(status.agvs).forEach(agv => {
+                    const cardElement = document.createElement('div');
+                    cardElement.className = 'status-card';
+                    
+                    let batteryColor = '#48bb78'; // Green
+                    let batteryIcon = '🔋';
+                    let statusIcon = '';
+                    
+                    if (agv.battery <= 30) {
+                        batteryColor = '#f56565'; // Red
+                        batteryIcon = '🪫';
+                    } else if (agv.battery <= 60) {
+                        batteryColor = '#ed8936'; // Orange
+                        batteryIcon = '🔋';
+                    }
+                    
+                    if (agv.status === 'charging') {
+                        statusIcon = '⚡';
+                        batteryColor = '#f6e05e'; // Yellow
+                    } else if (agv.status === 'charging_route') {
+                        statusIcon = '🔋➡️';
+                    } else if (agv.status === 'busy') {
+                        statusIcon = '🚛';
+                    } else {
+                        statusIcon = '🏠';
+                    }
+                    
+                    cardElement.innerHTML = `
+                        <h4>${agv.id} ${statusIcon}</h4>
+                        <div class="value" style="color: ${batteryColor}">
+                            ${batteryIcon} ${agv.battery}%<br>
+                            <small style="font-size: 0.6em; color: #666;">
+                                Node ${agv.position} | ${agv.status}
+                            </small>
+                        </div>
+                    `;
+                    statusGrid.appendChild(cardElement);
+                });
+                
+                // Update AGV positions and battery indicators
+                Object.values(status.agvs).forEach(agv => {
+                    updateAGVPosition(agv.id, agv.position);
+                    updateAGVBattery(agv.id, agv.battery);
+                });
+            }
+        }
+
+        function addLog(message, type = 'system') {
+            const logsContainer = document.getElementById('logsContainer');
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry log-${type}`;
+            
+            const timestamp = new Date().toLocaleTimeString();
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            
+            logsContainer.insertBefore(logEntry, logsContainer.firstChild);
+            
+            // Keep only last 50 logs
+            while (logsContainer.children.length > 50) {
+                logsContainer.removeChild(logsContainer.lastChild);
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

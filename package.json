@@ -1,0 +1,45 @@
+{
+  "name": "dynamic-agv-scheduling",
+  "version": "1.0.0",
+  "description": "A comprehensive Automated Guided Vehicle (AGV) scheduling and simulation system with real-time collision detection, visual monitoring, and intelligent pathfinding algorithms.",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "cd backend && node server.js",
+    "dev": "cd backend && nodemon server.js",
+    "install-deps": "cd backend && npm install",
+    "test": "echo \"No tests specified\" && exit 0",
+    "lint": "eslint backend/**/*.js",
+    "clean": "rm -rf output/logs/*.log output/datasets/*.csv output/analytics/*.json backend/uploads/*",
+    "setup": "npm run install-deps && mkdir -p output/logs output/datasets output/analytics backend/uploads"
+  },
+  "keywords": [
+    "agv",
+    "scheduling",
+    "simulation",
+    "automation",
+    "pathfinding",
+    "collision-detection",
+    "warehouse",
+    "logistics",
+    "real-time",
+    "websocket"
+  ],
+  "author": "AGV Development Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/dynamic-agv-scheduling.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/dynamic-agv-scheduling/issues"
+  },
+  "homepage": "https://github.com/your-username/dynamic-agv-scheduling#readme",
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "nodemon": "^2.0.0"
+  }
+}
