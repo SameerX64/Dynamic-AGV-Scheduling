@@ -34,27 +34,21 @@ A comprehensive **Automated Guided Vehicle (AGV) scheduling and simulation syste
 
 ### Node Network Topology
 ```
-1 - 2 - 3
-|   |   |
-4 - 5 - 6
-|   |
-7 - 8 - 9 (Charging Station)
+1 -- 2 -- 3
+|    |    |
+4 -- 5 -- 6
+|    |
+7 -- 8 -- 9 (Charging Station)
 ```
 
 ![Dashboard Interface](images/image3.png)
-
-## 📋 Prerequisites
-
-- **Node.js** (v14+ recommended)
-- **npm** package manager
-- **Web browser** (Chrome, Firefox, Safari)
 
 ## 🛠️ Installation & Setup
 
 ### 1. Clone the Repository
 ```bash
-git clone <repository-url>
-cd dynamic-agv-scheduling
+git clone https://github.com/SameerX64/Dynamic-AGV-Scheduling
+cd Dynamic-AGV-Scheduling
 ```
 
 ### 2. Install Dependencies
@@ -83,20 +77,6 @@ Open your browser and navigate to: **http://localhost:5000**
 ## 📊 Output Files & Logging
 
 The system generates comprehensive logs and analytics:
-
-### 📁 File Structure
-```
-output/
-├── logs/
-│   ├── system.log          # System events and errors
-│   ├── execution.log       # AGV execution logs
-│   └── performance.log     # Performance metrics
-├── datasets/
-│   ├── agv_data.csv        # AGV status data
-│   └── performance.csv     # Performance analytics
-└── analytics/
-    └── analytics.json      # System analytics
-```
 
 ### 📝 Execution Log Format
 ```
