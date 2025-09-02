@@ -43,6 +43,11 @@ A comprehensive **Automated Guided Vehicle (AGV) scheduling and simulation syste
 
 ![Dashboard Interface](images/image3.png)
 
+## 📋 Prerequisites
+
+- **Node.js** (v14+ recommended)
+- **npm** package manager
+- **Web browser** (Chrome, Firefox, Safari)
 ## 🛠️ Installation & Setup
 
 ### 1. Clone the Repository
@@ -93,12 +98,31 @@ agv_3-5-2-14:31:28-15-payload_123
 - `{weight}`: Task weight/priority
 - `payload_{num}`: Unique payload identifier
 
-##
+### 📁 File Structure
+```
+output/
+├── logs/
+│   ├── system.log          # System events and errors
+│   ├── execution.log       # AGV execution logs
+│   └── performance.log     # Performance metrics
+├── datasets/
+│   ├── agv_data.csv        # AGV status data
+│   └── performance.csv     # Performance analytics
+└── analytics/
+    └── analytics.json      # System analytics
+```
 
-### 👥 Team Members
-- Sameer Dhande
-- Ayush Deshmukh
-- Akshay Patil
-- Sahil Thakur
+### 📝 Execution Log Format
+```
+agv_1-3-7-14:30:45-25-payload_456
+agv_2-1-9-14:31:12-30-payload_789
+agv_3-5-2-14:31:28-15-payload_123
+```
 
-##
+**Format Breakdown:**
+- `agv_{num}`: AGV identifier (1, 2, or 3)
+- `{start_node}`: Starting node (1-9)
+- `{end_node}`: Destination node (1-9)
+- `{HH:MM:SS}`: Execution timestamp
+- `{weight}`: Task weight/priority
+- `payload_{num}`: Unique payload identifier
