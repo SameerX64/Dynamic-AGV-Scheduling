@@ -22,8 +22,15 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-        cache-dependency-path: backend/package-lock.json
+    
+    - name: Cache npm dependencies
+      uses: actions/cache@v3
+      with:
+        path: backend/node_modules
+        key: ${{ runner.os }}-npm-${{ matrix.node-version }}-${{ hashFiles('backend/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-npm-${{ matrix.node-version }}-
+          ${{ runner.os }}-npm-
     
     - name: Install dependencies
       run: |
@@ -71,6 +78,15 @@ jobs:
       with:
         node-version: '18.x'
     
+    - name: Cache npm dependencies
+      uses: actions/cache@v3
+      with:
+        path: backend/node_modules
+        key: ${{ runner.os }}-npm-18-${{ hashFiles('backend/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-npm-18-
+          ${{ runner.os }}-npm-
+    
     - name: Install dependencies
       run: |
         cd backend
@@ -92,6 +108,15 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: '18.x'
+    
+    - name: Cache npm dependencies
+      uses: actions/cache@v3
+      with:
+        path: backend/node_modules
+        key: ${{ runner.os }}-npm-18-${{ hashFiles('backend/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-npm-18-
+          ${{ runner.os }}-npm-
     
     - name: Install dependencies
       run: |
