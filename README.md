@@ -1,5 +1,4 @@
 # 🤖 Dynamic AGV Scheduling System
-# ![Header Image](header_image.png)
 
 A comprehensive **Automated Guided Vehicle (AGV) scheduling and simulation system** with real-time collision detection, visual monitoring, and intelligent pathfinding algorithms.
 
