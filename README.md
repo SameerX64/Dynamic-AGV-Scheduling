@@ -1,4 +1,4 @@
-# 🤖 Dynamic AGV Scheduling System
+# 🤖 PathWise - A Dynamic AGV Scheduling System
 
 ✨ Project Highlight: This project was developed as part of Rockwell Automation’s RokConnect Hackathon, held in March 2025 at Pune Institute of Computer Technology, Pune.
 
