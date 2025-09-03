@@ -1,6 +1,19 @@
 # 🤖 Dynamic AGV Scheduling System
 
+✨ Project Highlight: This project was developed as part of Rockwell Automation’s RokConnect Hackathon, held in March 2025 at Pune Institute of Computer Technology, Pune.
+
+🏆 Achievement: Secured **First Prize** among all participating teams.
+
+<p align="center">
+  <img src="https://github.com/SameerX64/Dynamic-AGV-Scheduling/blob/main/header_image.png" 
+       alt="Header Image" 
+       width="1500" 
+       height="500">
+</p>
+
 A comprehensive **Automated Guided Vehicle (AGV) scheduling and simulation system** with real-time collision detection, visual monitoring, and intelligent pathfinding algorithms.
+
+##
 
 ![AGV System Overview](images/image1.png)
 
