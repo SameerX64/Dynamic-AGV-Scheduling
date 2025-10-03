@@ -42,6 +42,13 @@ A comprehensive **Automated Guided Vehicle (AGV) scheduling and simulation syste
 - **Structured Data Export** (CSV, JSON)
 - **System Event Logging**
 
+<p align="center">
+  <img src="https://github.com/SameerX64/Dynamic-AGV-Scheduling/blob/main/flowchart.jpg" 
+       alt="Header Image" 
+       width="1500" 
+       height="5000">
+</p>
+
 
 
 ### Node Network Topology
